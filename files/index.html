@@ -1,48 +1,399 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sample Index Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 1em;
-            text-align: center;
-        }
-        main {
-            padding: 1em;
-        }
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 1em;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AWS Cloud Services — Interactive Guide</title>
+  <meta name="description" content="Interactive, responsive one-page website describing AWS and its core services. Search, filter and read about compute, storage, database, networking, security and more." />
+  <style>
+    /* Simple utility CSS for an attractive layout */
+    :root{
+      --bg: #0f1724;
+      --card: #0b1220;
+      --muted: #9aa4b2;
+      --accent: #ff9900; /* AWS orange */
+      --glass: rgba(255,255,255,0.04);
+      --radius: 12px;
+      --container: 1100px;
+      color-scheme: dark;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#e6eef6;background:linear-gradient(180deg,#061021 0%, #081529 50%, #02101a 100%);}
+    .container{max-width:var(--container);margin:0 auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#ffb46f,#ff9900);display:grid;place-items:center;color:#08101a;font-weight:700;font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,0.5)}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+    nav{display:flex;gap:8px;align-items:center}
+    .btn{background:var(--accent);color:#07121a;border:none;padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
+
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start;margin-top:26px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:20px;border-radius:var(--radius);box-shadow:0 6px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    .search{display:flex;gap:8px}
+    input.searchbox{flex:1;padding:12px;border-radius:10px;border:none;background:var(--glass);color:#e6eef6}
+    .meta{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+    .chip{background:rgba(255,255,255,0.03);padding:8px 10px;border-radius:999px;font-size:13px;color:var(--muted)}
+
+    .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .service-card{padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.02);cursor:pointer;transition:transform .18s ease, box-shadow .18s ease}
+    .service-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(2,6,23,0.6)}
+    .service-title{display:flex;gap:12px;align-items:center}
+    .svg-icon{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#08304a, #06324a);}
+    .small{font-size:13px;color:var(--muted);margin-top:8px}
+
+    .controls{display:flex;gap:12px;align-items:center;margin-top:12px}
+    select, .toggle{padding:8px;border-radius:10px;border:none;background:var(--glass);color:#e6eef6}
+
+    main{margin-top:26px}
+    .catalog{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+    .list{display:grid;gap:12px}
+    .service-full{display:flex;gap:16px;padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));border:1px solid rgba(255,255,255,0.02)}
+    .service-full h3{margin:0}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .tag{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:13px;color:var(--muted)}
+
+    aside.card{position:sticky;top:26px;height:fit-content}
+    .toc{display:flex;flex-direction:column;gap:8px}
+    .toc a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+    .toc a:hover{background:rgba(255,255,255,0.02);color:#fff}
+
+    footer{margin-top:34px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));display:flex;justify-content:space-between;align-items:center}
+
+    /* Responsive */
+    @media (max-width:1000px){.hero{grid-template-columns:1fr}.services-grid{grid-template-columns:repeat(2,1fr)}.catalog{grid-template-columns:1fr}}
+    @media (max-width:640px){.services-grid{grid-template-columns:1fr}.logo{width:44px;height:44px}.container{padding:16px}}
+
+    /* Simple modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.5);z-index:60}
+    .modal.open{display:flex}
+    .modal .panel{width:min(880px,96%);padding:18px;border-radius:12px;background:linear-gradient(180deg,#071225,#08142a);border:1px solid rgba(255,255,255,0.04)}
+
+    details summary{cursor:pointer}
+  </style>
 </head>
 <body>
+  <div class="container">
     <header>
-        <h1>I am learning Ansible with Abhishek Veeramalla</h1>
+      <div class="brand">
+        <div class="logo">AWS</div>
+        <div>
+          <h1>AWS Cloud Services — Interactive Guide</h1>
+          <p class="lead">Explore Amazon Web Services: compute, storage, database, networking, security, analytics, AI/ML and more.</p>
+        </div>
+      </div>
+      <nav>
+        <button class="ghost" id="darkToggle">Toggle Theme</button>
+        <a class="btn" href="#catalog">Explore Services</a>
+      </nav>
     </header>
-    <main>
-        <h2>Ansible Zero to Hero Series</h2>
-        <p> This is my First Ansible Playbook, Where I learnt how to deploy a static app on ec2 instance using Ansible. </p>
-        <p>For more information, visit www.youtube.com/abhishekveeramalla</p>
+
+    <section class="hero">
+      <div class="card">
+        <h2 style="margin:0 0 6px">Search & Filter AWS Services</h2>
+        <p class="small">Quickly find an AWS service by name, category, or keyword. Click a card to read details and examples.</p>
+
+        <div class="search" style="margin-top:12px">
+          <input class="searchbox" id="search" placeholder="Search services (e.g. S3, EC2, Lambda, RDS)" />
+          <button class="btn" id="clearSearch">Clear</button>
+        </div>
+
+        <div class="controls">
+          <select id="categoryFilter">
+            <option value="all">All Categories</option>
+            <option value="compute">Compute</option>
+            <option value="storage">Storage</option>
+            <option value="database">Database</option>
+            <option value="networking">Networking</option>
+            <option value="security">Security</option>
+            <option value="analytics">Analytics</option>
+            <option value="ml">Machine Learning</option>
+            <option value="devtools">Dev Tools</option>
+            <option value="management">Management</option>
+            <option value="migration">Migration</option>
+            <option value="iot">IoT</option>
+          </select>
+
+          <div class="chip">Total services: <span id="count">0</span></div>
+        </div>
+
+        <div class="services-grid" id="cards">
+          <!-- cards inserted by JS -->
+        </div>
+      </div>
+
+      <aside class="card">
+        <h3 style="margin:0 0 8px">AWS at a glance</h3>
+        <p class="small">Amazon Web Services (AWS) is a secure cloud services platform offering compute power, database storage, content delivery and other functionality to help businesses scale and grow.</p>
+
+        <div class="meta">
+          <div class="chip">Founded: 2006</div>
+          <div class="chip">Global Regions: 30+ (continually growing)</div>
+          <div class="chip">Use cases: Web apps, big data, ML, backup, media</div>
+        </div>
+
+        <div style="margin-top:14px">
+          <h4 style="margin:0 0 8px">Quick links</h4>
+          <div class="toc">
+            <a href="#compute">Compute</a>
+            <a href="#storage">Storage</a>
+            <a href="#database">Database</a>
+            <a href="#networking">Networking</a>
+            <a href="#security">Security</a>
+            <a href="#ml">Machine Learning</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <main id="catalog">
+      <div class="catalog">
+        <div>
+          <h2 style="margin-top:0">Service catalog</h2>
+          <p class="small">Browse services below. Use the search box to quickly narrow results. Click any service to open a full description with common uses and examples.</p>
+
+          <div class="list" id="serviceList">
+            <!-- full service entries populated by JS -->
+          </div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h3 style="margin:0 0 8px">Tips</h3>
+            <ul class="small" style="margin:0;padding-left:18px">
+              <li>Start with compute & storage for web apps: EC2 + S3.</li>
+              <li>Use serverless (Lambda) to avoid managing servers for small workloads.</li>
+              <li>Use IAM roles and KMS for secure access and key management.</li>
+              <li>For analytics use Athena, Redshift or EMR depending on scale.</li>
+            </ul>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="card">
+            <h3 style="margin:0 0 8px">FAQ</h3>
+            <details><summary class="small">What is the difference between EC2 and Lambda?</summary>
+              <p class="small">EC2 provides virtual servers with full control; Lambda is serverless and charges per execution with automatic scaling.</p>
+            </details>
+            <details><summary class="small">When to choose RDS vs DynamoDB?</summary>
+              <p class="small">RDS suits relational workloads with complex queries; DynamoDB is a fully managed NoSQL database for single-digit millisecond performance at scale.</p>
+            </details>
+          </div>
+        </aside>
+      </div>
+
+      <footer>
+        <div>
+          <strong>AWS Guide</strong> — built for study and quick reference. Not an official AWS site.
+        </div>
+        <div class="small">Made with ❤️ • <span id="updated">Updated: Nov 28, 2025</span></div>
+      </footer>
     </main>
-    <footer>
-        <p>&copy; 2024 Abhishek.Veeramalla</p>
-    </footer>
+  </div>
+
+  <!-- modal for details -->
+  <div class="modal" id="modal">
+    <div class="panel">
+      <button class="ghost" id="closeModal" style="float:right">Close</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    // Data: curated set of AWS services and descriptions
+    const services = [
+      {id:'ec2', name:'Amazon EC2', category:'compute', short:'Virtual servers in the cloud',
+        tags:['IaaS','VM','Compute'],
+        desc:'Elastic Compute Cloud (EC2) provides resizable compute capacity in the cloud. Use EC2 when you need full operating system control, custom AMIs, or long-running background processes.',
+        examples:['Host web servers','Run container runtimes','Batch processing']
+      },
+      {id:'lambda', name:'AWS Lambda', category:'compute', short:'Serverless functions', tags:['Serverless','FaaS'],
+        desc:'Lambda runs your code in response to events and automatically manages the compute resources. You pay only for compute time consumed.', examples:['Image processing','Webhooks','Scheduled jobs']
+      },
+      {id:'ecs', name:'Amazon ECS', category:'compute', short:'Container orchestration (managed)', tags:['Containers','Orchestration'],
+        desc:'Elastic Container Service (ECS) is a fully managed container orchestration service that supports Docker containers and integrates with other AWS services.', examples:['Microservices','Batch jobs with containers']
+      },
+      {id:'eks', name:'Amazon EKS', category:'compute', short:'Managed Kubernetes', tags:['Kubernetes','Containers'],
+        desc:'Elastic Kubernetes Service (EKS) runs upstream Kubernetes and helps you operate Kubernetes clusters with AWS integrations.', examples:['K8s workloads','Hybrid clusters']
+      },
+      {id:'s3', name:'Amazon S3', category:'storage', short:'Object storage', tags:['Object Storage','Durable'],
+        desc:'Simple Storage Service (S3) provides highly scalable object storage with 99.999999999% durability. It is ideal for static assets, backups and data lakes.', examples:['Store media','Static websites','Backups']
+      },
+      {id:'ebs', name:'Amazon EBS', category:'storage', short:'Block storage for EC2', tags:['Block Storage'],
+        desc:'Elastic Block Store (EBS) provides persistent block-level storage volumes for use with EC2 instances.', examples:['Database volumes','Filesystem storage for VMs']
+      },
+      {id:'rds', name:'Amazon RDS', category:'database', short:'Managed relational databases', tags:['Relational','Managed'],
+        desc:'Relational Database Service (RDS) manages relational engines like MySQL, PostgreSQL, MariaDB, Oracle, and SQL Server. It handles backups, patching and scaling.', examples:['OLTP databases','CMS backends']
+      },
+      {id:'dynamodb', name:'Amazon DynamoDB', category:'database', short:'NoSQL key-value & document DB', tags:['NoSQL','Fast'],
+        desc:'DynamoDB is a fully managed NoSQL database with single-digit millisecond performance and seamless scaling.', examples:['Gaming leaderboards','Session stores','IoT telemetry']
+      },
+      {id:'aurora', name:'Amazon Aurora', category:'database', short:'High-performance managed RDBMS', tags:['MySQL/Postgres compatible','Managed'],
+        desc:'Aurora is a cloud-native relational database compatible with MySQL and PostgreSQL that delivers performance and availability at scale.', examples:['SaaS apps','High throughput OLTP']
+      },
+      {id:'s3glacier', name:'Amazon S3 Glacier', category:'storage', short:'Archives & cold storage', tags:['Archive','Cold Storage'],
+        desc:'Glacier provides secure, durable, and low-cost storage for data archiving and long-term backup.', examples:['Compliance archives','Long-term backups']
+      },
+      {id:'vpc', name:'Amazon VPC', category:'networking', short:'Isolated virtual network', tags:['Networking','VPC'],
+        desc:'Virtual Private Cloud (VPC) lets you provision logically isolated sections of the AWS Cloud where you can launch resources in a virtual network.', examples:['Private subnets','Custom routing']
+      },
+      {id:'route53', name:'Amazon Route 53', category:'networking', short:'DNS & domain services', tags:['DNS','Routing'],
+        desc:'Route 53 is a scalable DNS and domain registration service that routes user requests to infrastructure.', examples:['DNS for websites','Health checks & routing policies']
+      },
+      {id:'cloudfront', name:'Amazon CloudFront', category:'networking', short:'CDN for content delivery', tags:['CDN','Edge'],
+        desc:'CloudFront is a content delivery network that speeds up the distribution of static and dynamic web content to users worldwide.', examples:['Deliver static assets','Video streaming']
+      },
+      {id:'iam', name:'AWS IAM', category:'security', short:'Identity and access management', tags:['Security','IAM'],
+        desc:'Identity and Access Management (IAM) enables secure control of access to AWS services and resources. Use roles, policies and MFA to protect resources.', examples:['Users & roles','Least privilege policies']
+      },
+      {id:'kms', name:'AWS KMS', category:'security', short:'Key management service', tags:['Encryption','KMS'],
+        desc:'Key Management Service (KMS) lets you create and control cryptographic keys used to protect your data.', examples:['Encrypt S3 objects','DB encryption at rest']
+      },
+      {id:'cloudwatch', name:'Amazon CloudWatch', category:'management', short:'Monitoring & observability', tags:['Monitoring','Logs','Metrics'],
+        desc:'CloudWatch collects metrics and logs, sets alarms, and enables observability across AWS resources.', examples:['Application metrics','Log aggregation']
+      },
+      {id:'cloudtrail', name:'AWS CloudTrail', category:'management', short:'Audit & governance', tags:['Auditing','Governance'],
+        desc:'CloudTrail records API calls for your AWS account and delivers log files for governance, compliance and risk auditing.', examples:['Security investigations','Compliance logs']
+      },
+      {id:'sagemaker', name:'Amazon SageMaker', category:'ml', short:'Machine learning platform', tags:['ML','Training','Inference'],
+        desc:'SageMaker provides tools to build, train, and deploy machine learning models at scale.', examples:['Model training','Hosted inference endpoints']
+      },
+      {id:'rekognition', name:'Amazon Rekognition', category:'ml', short:'Image & video analysis', tags:['Computer Vision','ML'],
+        desc:'Rekognition detects objects, scenes, and faces in images and videos and provides APIs for face recognition and moderation.', examples:['Face detection','Content moderation']
+      },
+      {id:'athena', name:'Amazon Athena', category:'analytics', short:'Query S3 data with SQL', tags:['Serverless','Query'],
+        desc:'Athena is an interactive query service that makes it easy to analyze data directly in S3 using standard SQL.', examples:['Ad-hoc queries','Data exploration']
+      },
+      {id:'redshift', name:'Amazon Redshift', category:'analytics', short:'Data warehouse', tags:['Data Warehouse','Analytics'],
+        desc:'Redshift is a fast, fully managed data warehouse that scales to petabytes for analytics workloads.', examples:['BI dashboards','Large-scale analytics']
+      },
+      {id:'dms', name:'AWS DMS', category:'migration', short:'Database migration service', tags:['Migration'],
+        desc:'Database Migration Service helps migrate databases to AWS with minimal downtime.', examples:['Migrate on-prem DB to RDS','Homogeneous/heterogeneous migrations']
+      },
+      {id:'iotcore', name:'AWS IoT Core', category:'iot', short:'Connect IoT devices securely', tags:['IoT','MQTT'],
+        desc:'IoT Core enables secure device connectivity, message brokering and device management at scale.', examples:['Telemetry ingestion','Device control']
+      }
+    ];
+
+    // Build cards and list
+    const cardsEl = document.getElementById('cards');
+    const listEl = document.getElementById('serviceList');
+    const countEl = document.getElementById('count');
+    const modal = document.getElementById('modal');
+    const modalContent = document.getElementById('modalContent');
+
+    function iconLetter(name){return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()}
+
+    function renderCards(filterText='', category='all'){
+      cardsEl.innerHTML='';
+      const filtered = services.filter(s=>{
+        const matchText = (s.name + ' ' + s.short + ' ' + (s.tags||[]).join(' ')).toLowerCase().includes(filterText.toLowerCase());
+        const matchCategory = category==='all' ? true : s.category===category;
+        return matchText && matchCategory;
+      });
+      countEl.textContent = filtered.length;
+      filtered.forEach(s=>{
+        const div = document.createElement('div'); div.className='service-card';
+        div.innerHTML = `
+          <div class="service-title">
+            <div class="svg-icon">${iconLetter(s.name)}</div>
+            <div>
+              <strong>${s.name}</strong>
+              <div class="small">${s.short}</div>
+            </div>
+          </div>
+        `;
+        div.addEventListener('click',()=>openService(s.id));
+        cardsEl.appendChild(div);
+      });
+      renderList(filtered);
+    }
+
+    function renderList(list){
+      listEl.innerHTML='';
+      list.forEach(s=>{
+        const el = document.createElement('div'); el.className='service-full';
+        el.innerHTML = `
+          <div style="width:72px;height:72px;border-radius:10px;background:linear-gradient(135deg,#06283b,#06384a);display:grid;place-items:center;font-weight:700">${iconLetter(s.name)}</div>
+          <div style="flex:1">
+            <h3>${s.name} <span style="color:var(--muted);font-weight:600;font-size:13px"> — ${s.short}</span></h3>
+            <p class="small">${s.desc}</p>
+            <div class="tags">${s.tags.map(t=>`<div class="tag">${t}</div>`).join('')}</div>
+            <div style="margin-top:10px">
+              <button class="btn" onclick="openService('${s.id}')">Read more</button>
+            </div>
+          </div>
+        `;
+        listEl.appendChild(el);
+      });
+      if(list.length===0){listEl.innerHTML='<div class="card small">No services match your search. Try a different keyword.</div>'}
+    }
+
+    function openService(id){
+      const s = services.find(x=>x.id===id);
+      if(!s) return;
+      modalContent.innerHTML = `
+        <h2 style="margin-top:0">${s.name}</h2>
+        <p class="small">${s.desc}</p>
+        <h4>Common uses</h4>
+        <ul class="small">${s.examples.map(e=>`<li>${e}</li>`).join('')}</ul>
+        <h4>Quick start</h4>
+        <p class="small">Example: ${quickStartSnippet(s)}</p>
+        <h4>Related services</h4>
+        <div class="tags">${relatedTags(s).map(t=>`<div class="tag">${t}</div>`).join('')}</div>
+      `;
+      modal.classList.add('open');
+    }
+
+    function closeModal(){ modal.classList.remove('open') }
+    document.getElementById('closeModal').addEventListener('click',closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal() });
+
+    function quickStartSnippet(s){
+      // lightweight, illustrative snippets
+      if(s.id==='s3') return `Create a bucket via console or AWS CLI: aws s3 mb s3://my-bucket`;
+      if(s.id==='ec2') return `Launch an instance in console or use: aws ec2 run-instances --image-id ami-... --count 1 --instance-type t3.micro`;
+      if(s.id==='lambda') return `Deploy a simple Node.js function and configure a trigger (API Gateway or S3).`;
+      if(s.id==='rds') return `Create an RDS instance and connect via your DB client using endpoint, username, and password.`;
+      return `Refer to official AWS docs for step-by-step commands and best practices.`;
+    }
+
+    function relatedTags(s){
+      const map = {
+        compute:['EC2','Lambda','ECS','EKS'],
+        storage:['S3','EBS','EFS','Glacier'],
+        database:['RDS','DynamoDB','Aurora','Redshift'],
+        networking:['VPC','CloudFront','Route53'],
+        security:['IAM','KMS','CloudTrail']
+      };
+      return map[s.category] || [];
+    }
+
+    // wire up search & filters
+    const searchBox = document.getElementById('search');
+    const category = document.getElementById('categoryFilter');
+    const clearBtn = document.getElementById('clearSearch');
+
+    function applyFilters(){ renderCards(searchBox.value.trim(), category.value); }
+    searchBox.addEventListener('input', ()=> applyFilters());
+    category.addEventListener('change', ()=> applyFilters());
+    clearBtn.addEventListener('click', ()=>{ searchBox.value=''; category.value='all'; applyFilters(); });
+
+    // initial render
+    renderCards();
+
+    // simple dark toggle (switches root bg colors) — demonstration only
+    document.getElementById('darkToggle').addEventListener('click',()=>{
+      document.documentElement.style.setProperty('--bg', getComputedStyle(document.documentElement).getPropertyValue('--bg') === '#0f1724' ? '#f6f8fb' : '#0f1724');
+      alert('Theme toggle demo — this page is designed with a dark palette.');
+    });
+
+    // expose openService to global for inline handlers
+    window.openService = openService;
+  </script>
 </body>
 </html>
+
